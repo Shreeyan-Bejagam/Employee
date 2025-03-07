@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const IndentForm = () => {
     const navigate = useNavigate();
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
 
     const [step, setStep] = useState(1);
 
@@ -31,20 +32,20 @@ const IndentForm = () => {
     const handleItemChange = (index, e) => {
         const items = [...formData.item_details];
         const { name, value } = e.target;
-    
+
         // Update value
         items[index][name] = value;
-    
+
         // Recalculate amount when cost or qty changes
         if (name === 'cost' || name === 'qty') {
             const cost = parseFloat(items[index].cost) || 0;    // Price per item
             const qty = parseInt(items[index].qty) || 0;        // Total quantity
             items[index].amount = cost * qty;                    // Total amount = cost * qty
         }
-    
+
         setFormData({ ...formData, item_details: items });
     };
-    
+
 
     // 💡 Handle Quantity Change (with stepper buttons)
     const handleQtyChange = (index, qty) => {
@@ -84,8 +85,7 @@ const IndentForm = () => {
             ...formData,
             teamlead_id: localStorage.getItem("teamLeadId")
         };
-
-        axios.post('http://localhost:3001/auth/submit_indent', finalData)
+        axios.post(`${backendURL}/auth/submit_indent`, finalData, { withCredentials: true })
             .then(response => {
                 if (response.data.success) {
                     alert('Indent Request Submitted Successfully');
@@ -96,6 +96,7 @@ const IndentForm = () => {
             })
             .catch(error => console.error('Error submitting indent request', error));
     };
+
 
     return (
         <div className="container mt-4">
@@ -152,180 +153,180 @@ const IndentForm = () => {
                             </tr>
                         </thead>
                         <tbody>
-    {formData.item_details.map((item, index) => (
-        <tr key={index}>
-            <td>
-                <input
-                    type="text"
-                    name="name"
-                    value={item.name}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="form-control"
-                />
-            </td>
-            <td>
-                <input
-                    type="number"
-                    name="cost"
-                    value={item.cost}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="form-control"
-                    min="0"
-                />
-            </td>
-            <td>
-                {/* Qty as number input with stepper arrows */}
-                <input
-                    type="number"
-                    name="qty"
-                    value={item.qty}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="form-control"
-                    min="1"
-                />
-            </td>
-            <td>
-                <input
-                    type="number"
-                    name="amount"
-                    value={item.amount}
-                    className="form-control"
-                    readOnly
-                />
-            </td>
-            <td>
-                <input
-                    type="text"
-                    name="required_by"
-                    value={item.required_by}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="form-control"
-                />
-            </td>
-            <td>
-                <input
-                    type="text"
-                    name="warranty"
-                    value={item.warranty}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="form-control"
-                />
-            </td>
-            <td>
-                <input
-                    type="text"
-                    name="remarks"
-                    value={item.remarks}
-                    onChange={(e) => handleItemChange(index, e)}
-                    className="form-control"
-                />
-            </td>
-            <td>
-                <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => removeItemRow(index)}
-                >
-                    🗑️
-                </button>
-            </td>
-        </tr>
-    ))}
-</tbody>
+                            {formData.item_details.map((item, index) => (
+                                <tr key={index}>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={item.name}
+                                            onChange={(e) => handleItemChange(index, e)}
+                                            className="form-control"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="cost"
+                                            value={item.cost}
+                                            onChange={(e) => handleItemChange(index, e)}
+                                            className="form-control"
+                                            min="0"
+                                        />
+                                    </td>
+                                    <td>
+                                        {/* Qty as number input with stepper arrows */}
+                                        <input
+                                            type="number"
+                                            name="qty"
+                                            value={item.qty}
+                                            onChange={(e) => handleItemChange(index, e)}
+                                            className="form-control"
+                                            min="1"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            name="amount"
+                                            value={item.amount}
+                                            className="form-control"
+                                            readOnly
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="required_by"
+                                            value={item.required_by}
+                                            onChange={(e) => handleItemChange(index, e)}
+                                            className="form-control"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="warranty"
+                                            value={item.warranty}
+                                            onChange={(e) => handleItemChange(index, e)}
+                                            className="form-control"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="remarks"
+                                            value={item.remarks}
+                                            onChange={(e) => handleItemChange(index, e)}
+                                            className="form-control"
+                                        />
+                                    </td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="btn btn-secondary"
+                                            onClick={() => removeItemRow(index)}
+                                        >
+                                            🗑️
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
 
                     </table>
 
                     <button type="button" onClick={addItemRow}>+ Add Row</button>
                     <button type="button" onClick={() => setStep(2)}>Next</button>
-                    
+
                 </>
             )}
 
-{step === 2 && (
-    <>
-        <h3>Page 2: Approval & Review (Read Only Preview)</h3>
+            {step === 2 && (
+                <>
+                    <h3>Page 2: Approval & Review (Read Only Preview)</h3>
 
-        {/* Procurement TL Section - Checklist */}
-        <h4 className="mt-4">For Office of Stores and Purchase only</h4>
-        <table className="table table-bordered">
-            <thead>
-                <tr><th colSpan="2" className="text-center">CHECKLIST</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1. Budget head specified</td><td>Yes / No</td></tr>
-                <tr><td>2. Availability of Space at Stores</td><td>Yes / No</td></tr>
-                <tr><td>3. Specifications enclosed</td><td>Yes / No</td></tr>
-                <tr><td>4. <i>Items</i> working condition</td><td>Yes / No</td></tr>
-                <tr><td>5. Any Deviation</td><td>______________________</td></tr>
-            </tbody>
-        </table>
+                    {/* Procurement TL Section - Checklist */}
+                    <h4 className="mt-4">For Office of Stores and Purchase only</h4>
+                    <table className="table table-bordered">
+                        <thead>
+                            <tr><th colSpan="2" className="text-center">CHECKLIST</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1. Budget head specified</td><td>Yes / No</td></tr>
+                            <tr><td>2. Availability of Space at Stores</td><td>Yes / No</td></tr>
+                            <tr><td>3. Specifications enclosed</td><td>Yes / No</td></tr>
+                            <tr><td>4. <i>Items</i> working condition</td><td>Yes / No</td></tr>
+                            <tr><td>5. Any Deviation</td><td>______________________</td></tr>
+                        </tbody>
+                    </table>
 
-        {/* Procurement TL Section - Mode of Purchase */}
-        <h5 className="mt-3"><b>MODE OF PURCHASE</b></h5>
-        <ul>
-            <li>Direct Purchase (below 50 K)</li>
-            <li>Three quotation basis (above 50 K to 5 Lac) Limited</li>
-            <li>Tender Enquiry</li>
-            <li>Open Tender Enquiry</li>
-            <li>Repeat Order</li>
-            <li>Proprietary</li>
-        </ul>
-        <p className="mt-2"><i>(Tick whichever is applicable)</i></p>
+                    {/* Procurement TL Section - Mode of Purchase */}
+                    <h5 className="mt-3"><b>MODE OF PURCHASE</b></h5>
+                    <ul>
+                        <li>Direct Purchase (below 50 K)</li>
+                        <li>Three quotation basis (above 50 K to 5 Lac) Limited</li>
+                        <li>Tender Enquiry</li>
+                        <li>Open Tender Enquiry</li>
+                        <li>Repeat Order</li>
+                        <li>Proprietary</li>
+                    </ul>
+                    <p className="mt-2"><i>(Tick whichever is applicable)</i></p>
 
-        {/* Procurement Comments */}
-        <p><b>Comments (if any):</b></p>
-        <p>_____________________________</p>
+                    {/* Procurement Comments */}
+                    <p><b>Comments (if any):</b></p>
+                    <p>_____________________________</p>
 
-        <p className="text-end"><b>Officer-in-Charge (Stores and Purchase)</b></p>
+                    <p className="text-end"><b>Officer-in-Charge (Stores and Purchase)</b></p>
 
-        {/* PFC Section */}
-        <h5 className="mt-4 text-center">Constitution of Purchase Finalization Committee (PFC)</h5>
-        <table className="table table-bordered">
-            <tbody>
-                <tr><td>Chairman (PI/CEO/PD/Nominated by Competent Authority)</td><td>______________________</td></tr>
-                <tr><td>Indenter</td><td>______________________</td></tr>
-                <tr><td>Expert 1 (Senior Employee/Nominated by Competent Authority)</td><td>______________________</td></tr>
-                <tr><td>Expert 2 (Honorary Member/Nominated by Competent Authority)</td><td>______________________</td></tr>
-                <tr><td>One Member from Finance Team (Nominated by Competent Authority)</td><td>______________________</td></tr>
-            </tbody>
-        </table>
-        <p className="text-end"><b>(Signature of Competent Authority)</b></p>
+                    {/* PFC Section */}
+                    <h5 className="mt-4 text-center">Constitution of Purchase Finalization Committee (PFC)</h5>
+                    <table className="table table-bordered">
+                        <tbody>
+                            <tr><td>Chairman (PI/CEO/PD/Nominated by Competent Authority)</td><td>______________________</td></tr>
+                            <tr><td>Indenter</td><td>______________________</td></tr>
+                            <tr><td>Expert 1 (Senior Employee/Nominated by Competent Authority)</td><td>______________________</td></tr>
+                            <tr><td>Expert 2 (Honorary Member/Nominated by Competent Authority)</td><td>______________________</td></tr>
+                            <tr><td>One Member from Finance Team (Nominated by Competent Authority)</td><td>______________________</td></tr>
+                        </tbody>
+                    </table>
+                    <p className="text-end"><b>(Signature of Competent Authority)</b></p>
 
-        {/* Chairman Approval Section */}
-        <h5 className="mt-4 text-center">Approval Section</h5>
-        <table className="table table-bordered">
-            <tbody>
-                <tr>
-                    <td>
-                        <b>PI</b><br />
-                        (Up to Rs. 5 Lakh)<br />
-                        <small>Note: Non-Recurring: Rs. 50,000<br />Recurring: Rs. 5,00,000 (For Project Purchase)</small>
-                    </td>
-                    <td><b>PROJECT DIRECTOR/CEO</b><br />(Up to Rs. 50 Lac)</td>
-                    <td><b>CHAIRMAN</b><br />(Full Power)</td>
-                </tr>
-            </tbody>
-        </table>
+                    {/* Chairman Approval Section */}
+                    <h5 className="mt-4 text-center">Approval Section</h5>
+                    <table className="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <b>PI</b><br />
+                                    (Up to Rs. 5 Lakh)<br />
+                                    <small>Note: Non-Recurring: Rs. 50,000<br />Recurring: Rs. 5,00,000 (For Project Purchase)</small>
+                                </td>
+                                <td><b>PROJECT DIRECTOR/CEO</b><br />(Up to Rs. 50 Lac)</td>
+                                <td><b>CHAIRMAN</b><br />(Full Power)</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        {/* Office of Accounts Section */}
-        <h4 className="mt-4">For Office of Accounts only</h4>
-        <table className="table table-bordered">
-            <tbody>
-                <tr><td>Budget allocation of the Office/Project</td><td>______________________</td></tr>
-                <tr><td>Budget utilized</td><td>______________________</td></tr>
-                <tr><td>Available balance</td><td>______________________</td></tr>
-                <tr><td>Are funds available in the budget head requested by the Project/Office?</td><td>Yes / No</td></tr>
-                <tr><td>Comments (if any)</td><td>______________________</td></tr>
-            </tbody>
-        </table>
-        <p className="text-end"><b>Officer-in-Charge (Accounts)</b></p>
+                    {/* Office of Accounts Section */}
+                    <h4 className="mt-4">For Office of Accounts only</h4>
+                    <table className="table table-bordered">
+                        <tbody>
+                            <tr><td>Budget allocation of the Office/Project</td><td>______________________</td></tr>
+                            <tr><td>Budget utilized</td><td>______________________</td></tr>
+                            <tr><td>Available balance</td><td>______________________</td></tr>
+                            <tr><td>Are funds available in the budget head requested by the Project/Office?</td><td>Yes / No</td></tr>
+                            <tr><td>Comments (if any)</td><td>______________________</td></tr>
+                        </tbody>
+                    </table>
+                    <p className="text-end"><b>Officer-in-Charge (Accounts)</b></p>
 
-        <div className="mt-4 d-flex justify-content-between">
-            <button className="btn btn-secondary" onClick={() => setStep(1)}>Back</button>
-            <button className="btn btn-success" onClick={handleSubmit}>Submit Request</button>
-        </div>
-    </>
-)}
+                    <div className="mt-4 d-flex justify-content-between">
+                        <button className="btn btn-secondary" onClick={() => setStep(1)}>Back</button>
+                        <button className="btn btn-success" onClick={handleSubmit}>Submit Request</button>
+                    </div>
+                </>
+            )}
 
         </div>
     );

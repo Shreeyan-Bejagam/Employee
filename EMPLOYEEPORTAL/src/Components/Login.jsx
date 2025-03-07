@@ -10,35 +10,44 @@ const Login = () => {
     });
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+
+    // Make sure axios always sends cookies for authentication
     axios.defaults.withCredentials = true;
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             console.log("🔍 Sending Request:", values);
-            const response = await axios.post("http://localhost:3001/employee/employeelogin", values);
+
+            // Use VITE_BACKEND_URL from your .env file (make sure it's deployed correctly)
+            const backendURL = import.meta.env.VITE_BACKEND_URL;
+
+            const response = await axios.post(
+                `${backendURL}/employee/employeelogin`, 
+                values, 
+                { withCredentials: true }  // Ensures cookies (like JWT) work
+            );
+
             console.log("✅ Server Response:", response.data);
-    
+
             if (response.data.loginStatus) {
                 const userData = {
                     id: response.data.id,
-                    email: values.email  // You can enhance this later if needed
+                    email: values.email
                 };
-    
-                localStorage.setItem("user", JSON.stringify(userData));  // This is what App.jsx expects
-                localStorage.setItem("employeeId", response.data.id);    // Optional if needed
-    
+
+                localStorage.setItem("user", JSON.stringify(userData));  // Save user data
+                localStorage.setItem("employeeId", response.data.id);    // Optional, if needed later
+
                 navigate("/dashboard");
             } else {
-                setError(response.data.Error);  // This was outside the right scope before
+                setError(response.data.Error);  // Set error if login fails
             }
         } catch (err) {
             console.error("❌ API Call Error:", err);
             setError("Login failed. Please check your credentials.");
         }
     };
-    
-    
 
     return (
         <div className='d-flex justify-content-center align-items-center vh-100 loginPage'>

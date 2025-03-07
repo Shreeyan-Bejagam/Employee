@@ -8,38 +8,41 @@ const AssetRequests = () => {
   const [myAssets, setMyAssets] = useState([]);
   const [allAssets, setAllAssets] = useState([]);
   const [search, setSearch] = useState("");
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     console.log("🔍 Debug: User Data in AssetRequests.jsx", user);
   }, [user]);
 
   // ✅ Fetch "My Assets" where the logged-in user is the liable person
-  useEffect(() => {
-    if (!user || !user.name) return;
+ // ✅ Fetch "My Assets"
+useEffect(() => {
+  if (!user || !user.name) return;
 
-    axios.get(`http://localhost:3001/auth/my_assets/${user.name}`)
+  axios.get(`${backendURL}/auth/my_assets/${user.name}`, { withCredentials: true })
       .then(response => {
-        if (response.data.Status) {
-          setMyAssets([...response.data.Result]);
-        } else {
-          console.error("❌ Error fetching My Assets:", response.data.Error);
-        }
+          if (response.data.Status) {
+              setMyAssets([...response.data.Result]);
+          } else {
+              console.error("❌ Error fetching My Assets:", response.data.Error);
+          }
       })
       .catch(err => console.error("❌ Network Error fetching My Assets:", err));
-  }, [user]);
+}, [user]);
 
-  // ✅ Fetch "All Assets" for requesting
-  useEffect(() => {
-    axios.get("http://localhost:3001/auth/assets")
+// ✅ Fetch "All Assets" for requesting
+useEffect(() => {
+  axios.get(`${backendURL}/auth/assets`, { withCredentials: true })
       .then(response => {
-        if (response.data.Status) {
-          setAllAssets(response.data.Result);
-        } else {
-          console.error("❌ Error fetching All Assets:", response.data.Error);
-        }
+          if (response.data.Status) {
+              setAllAssets(response.data.Result);
+          } else {
+              console.error("❌ Error fetching All Assets:", response.data.Error);
+          }
       })
       .catch(err => console.error("❌ Network Error fetching All Assets:", err));
-  }, []);
+}, []);
+
 
   // 🔹 Handle search functionality
   const handleSearch = (event) => {

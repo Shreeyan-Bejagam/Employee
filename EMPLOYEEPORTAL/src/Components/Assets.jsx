@@ -6,6 +6,7 @@ const Assets = () => {
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [type, setType] = useState("All");
   const [search, setSearch] = useState("");
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     fetchAssets();
@@ -13,8 +14,8 @@ const Assets = () => {
 
   const fetchAssets = () => {
     const endpoint = type === "All" ? "/auth/assets" : `/auth/assets/${type}`;
-    axios
-      .get(`http://localhost:3001${endpoint}`)
+
+    axios.get(`${backendURL}${endpoint}`, { withCredentials: true })
       .then((response) => {
         if (response.data.Status) {
           setAssets(response.data.Result);

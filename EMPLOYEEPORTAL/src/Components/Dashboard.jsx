@@ -7,10 +7,13 @@ const Dashboard = () => {
   const [employee, setEmployee] = useState(null);
   const navigate = useNavigate();
 
+  // Backend URL from environment variable
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   // Fetch Employee Details
   useEffect(() => {
     const employeeId = localStorage.getItem("employeeId");
-    console.log("🔍 Stored Employee ID in localStorage:", employeeId); // ✅ Debugging Log
+    console.log("🔍 Stored Employee ID in localStorage:", employeeId);
 
     if (!employeeId) {
       console.error("🚨 No Employee ID found in localStorage.");
@@ -18,11 +21,11 @@ const Dashboard = () => {
       return;
     }
 
-    const apiUrl = `http://localhost:3001/employee/detail/${employeeId}`;
+    const apiUrl = `${backendURL}/employee/detail/${employeeId}`;
 
-    console.log("📡 Fetching Employee Data from:", apiUrl); // ✅ Debugging Log
+    console.log("📡 Fetching Employee Data from:", apiUrl);
 
-    axios.get(apiUrl)
+    axios.get(apiUrl, { withCredentials: true })
       .then((response) => {
         console.log("✅ Employee Data Fetched:", response.data);
         if (response.data) {
@@ -32,13 +35,11 @@ const Dashboard = () => {
       .catch((err) => {
         console.error("❌ Error fetching employee data:", err);
       });
-  }, [navigate]);
-
-
+  }, [navigate, backendURL]);
 
   // Handle Logout
   const handleLogout = () => {
-    axios.get("http://localhost:3001/employee/logout")
+    axios.get(`${backendURL}/employee/logout`, { withCredentials: true })
       .then((result) => {
         if (result.data.Status) {
           localStorage.removeItem("employeeId");
@@ -64,12 +65,11 @@ const Dashboard = () => {
             {employee && (
               <div className="text-center mt-2">
                 <img
-                  src={`http://localhost:3000/images/${employee.image}`}
+                  src={`${backendURL}/images/${employee.image}`}    // Corrected URL
                   alt="Employee Profile"
                   className="rounded-circle"
                   style={{ width: "80px", height: "80px" }}
                 />
-
 
 
                 <h5 className="mt-2">{employee.name}</h5>
